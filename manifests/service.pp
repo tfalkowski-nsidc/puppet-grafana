@@ -19,7 +19,7 @@ class grafana::service {
     }
     'package','repo': {
 	if ($::osfamily == 'RedHat' and $::operatingsystemmajrelease == '7') or ($::operatingsystem == 'Ubuntu' and $::operatingsystemmajrelease >= '15.10') {
-      	exec { 'refresh_systemd':
+      	exec { 'reload_systemd':
         	path        => ["/bin"],
         	command     => 'systemctl daemon-reload',
         	refreshonly => true,
