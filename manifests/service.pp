@@ -22,7 +22,6 @@ class grafana::service {
       	exec { 'reload_systemd':
         	path        => ["/bin"],
         	command     => 'systemctl daemon-reload',
-        	refreshonly => true,
 		}
 		service { $::grafana::service_name:
 				provider  => systemd,
