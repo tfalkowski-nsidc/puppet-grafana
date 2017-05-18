@@ -18,12 +18,26 @@ class grafana::service {
       create_resources(docker::run, $container, $defaults)
     }
     'package','repo': {
-      service { $::grafana::service_name:
-        ensure    => running,
-        enable    => true,
-        subscribe => Package[$::grafana::package_name],
-      }
+	if ($::osfamily == 'RedHat' and $::operatingsystemmajrelease == '7') or ($::operatingsystem == 'Ubuntu' and $::operatingsystemmajrelease >= '15.10') {
+      	exec { 'refresh_systemd':
+        	path        => ["/bin"],
+        	command     => 'systemctl daemon-reload',
+        	refreshonly => true,
+		}
+		service { $::grafana::service_name:
+				provider  => systemd,
+        		ensure    => running,
+        		enable    => true,
+        		subscribe => Package[$::grafana::package_name],
+      	}
+	}else {
+     	service { $::grafana::service_name:
+       		ensure    => running,
+       		enable    => true,
+       		subscribe => Package[$::grafana::package_name],
+     	}
     }
+}
     'archive': {
       $service_path   = "${::grafana::install_dir}/bin/${::grafana::service_name}"
       $service_config = "${::grafana::install_dir}/conf/custom.ini"
